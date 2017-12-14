@@ -1,0 +1,21 @@
+{
+  "name": "01-nodejs-files-order",
+  "version": "1.0.0",
+  "description": "Задание №1 курса NodeJS Loftscool. Упорядочивание файлов.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freeelk/01-nodejs-files-order.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freeelk/01-nodejs-files-order/issues"
+  },
+  "homepage": "https://github.com/freeelk/01-nodejs-files-order#readme"
+}
