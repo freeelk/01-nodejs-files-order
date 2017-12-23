@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+    <script src='/socket.io/socket.io.js'></script>
+    <script>
+        var socket = io();
+
+        socket.on('start', function(data) {
+            addMessage(data.message);
+        });
+
+        socket.on('time', function(data) {
+            addMessage(data.time);
+        });
+
+        socket.on('stop', function(data) {
+            addMessage(data.message);
+        });
+
+        socket.on('error', console.error.bind(console));
+
+        function addMessage(message) {
+            var text = document.createTextNode(message),
+                    el = document.createElement('li'),
+                    messages = document.getElementById('messages');
+
+            el.appendChild(text);
+            messages.appendChild(el);
+        }
+    </script>
+</head>
+<body>
+<ul id='messages'></ul>
+</body>
+</html>

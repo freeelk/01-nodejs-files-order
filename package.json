@@ -1,28 +1,17 @@
 {
-  "name": "01-nodejs-files-order",
+  "name": "02-async",
   "version": "1.0.0",
-  "description": "Задание №1 курса NodeJS Loftscool. Упорядочивание файлов.",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/freeelk/01-nodejs-files-order.git"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-win": "set INTERVAL=10000 TIMEOUT=100000 && node main.js",
+    "start": "INTERVAL=1000 TIMEOUT=10000 node main.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/freeelk/01-nodejs-files-order/issues"
-  },
-  "homepage": "https://github.com/freeelk/01-nodejs-files-order#readme",
   "dependencies": {
-    "exif": "^0.6.0",
-    "mmmagic": "^0.4.6",
-    "node-id3": "^0.1.0"
-  },
-  "devDependencies": {
+    "socket.io": "^2.0.4"
   }
 }
