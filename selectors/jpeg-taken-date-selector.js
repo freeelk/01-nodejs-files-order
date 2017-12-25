@@ -1,36 +1,38 @@
 const path = require('path');
-const ExifImage = require('exif').ExifImage;
+const exifImage = require('exif').ExifImage;
+const util = require('util');
+
+const exifImageP = util.promisify(exifImage);
 
 /**
  * Отбор JPEG-файлов и сортировка по дате съемки (берется из EXIF) в целевой папке в виде дерева год->месяц->день
  */
 class JpegTakenDateSelector {
-  match (mime) {
+
+  matchMime(mime) {
     return mime === 'image/jpeg';
   }
 
-  getSelector (file, callback) {
+  async getSelector(file) {
     try {
-      ExifImage({ image: file }, function (error, exifData) {
-        if (error) {
-          callback(null, 'not_defined');
-        } else {
-          if (exifData.exif.DateTimeOriginal) {
-            let matched = exifData.exif.DateTimeOriginal.match(/(\d{4}):(\d{2}):(\d{2})/);
-            if (matched) {
-              callback(null, path.join(matched[1], matched[2], matched[3]));
-            } else {
-              callback(null, 'not_defined');
-            }
-          } else {
-            callback(null, 'not_defined');
-          }
+      const exifData = await exifImageP({image: file});
+      if (exifData && exifData.exif.DateTimeOriginal) {
+        let matched = exifData.exif.DateTimeOriginal.match(/(\d{4}):(\d{2}):(\d{2})/);
+        if (matched) {
+          return path.join(matched[1], matched[2], matched[3]);
         }
-      });
-    } catch (error) {
-      callback(error.message, null);
+      }
+
     }
+    catch (err) {
+      return ('not_defined');
+    }
+
+    return ('not_defined');
   }
+
 }
 
 module.exports = JpegTakenDateSelector;
+
+

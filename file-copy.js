@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
+const promisePipe = require("promisepipe");
 
 /**
  * Копирование файлов из исходной в целевую папку
@@ -20,53 +22,16 @@ class CopyFile {
      * @param selector Часть пути в целевой папке, куда следует скопировать файл
      * @param sourceFile Полный путь к исходному файлу
      */
-  copy (selector, sourceFile, callback) {
+  async copy(selector, sourceFile) {
+      console.log(this.targetDir, selector);
     this.mkDirByPathSync(path.join(this.targetDir, selector));
-
     const targetFullName = this._getDestFileName(selector, path.basename(sourceFile));
-    this._copyFile(sourceFile, targetFullName, (err) => {
-      if (err) {
-        let errMess = `Error copying file ${sourceFile} to ${targetFullName} ${err.message}`;
-        callback(errMess);
-      } else {
-        callback(null, `File ${sourceFile} copied to ${targetFullName}`);
-      }
-    });
-  }
 
-  /**
-     * Копирует файл - приватный метод
-     *
-     * @param source
-     * @param target
-     * @param callback
-     */
-  _copyFile (source, target, callback) {
-    let callbackCalled = false;
+    return await promisePipe(
+        fs.createReadStream(sourceFile),
+        fs.createWriteStream(targetFullName)
+    );
 
-    let readStream = fs.createReadStream(source);
-    readStream.on('error', function (err) {
-      done(err);
-    });
-
-    let writeStream = fs.createWriteStream(target);
-
-    writeStream.on('error', function (err) {
-      done(err);
-    });
-
-    writeStream.on('close', function () {
-      done();
-    });
-
-    readStream.pipe(writeStream);
-
-    function done (err) {
-      if (!callbackCalled) {
-        callback(err);
-        callbackCalled = true;
-      }
-    }
   }
 
   /**

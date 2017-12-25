@@ -18,14 +18,9 @@
 const fs = require('fs');
 const ArgvParser = require('./argv-parser');
 const FilesWalker = require('./files-walker');
-const DestSelector = require('./dest-selector');
-const FileCopy = require('./file-copy');
-const CopyWatcher = require('./copy-watcher');
+const selectorsDefinition = require('./selectors/selectors-definitions');
 const removeDirSync = require('./remove-dir-sync');
 
-const JpegTakenDateSelector = require('./selectors/jpeg-taken-date-selector');
-const MusicFirstLetterSelector = require('./selectors/music-first-letter-selector');
-const Mp3JenreSelector = require('./selectors/mp3-jenre-selector');
 
 /**
  * Описание аргументов командной строки
@@ -68,15 +63,9 @@ const keysDefinition = [
   }
 ];
 
-const selectorsDefinition = {
-  'jpeg-taken-date': JpegTakenDateSelector,
-  'music-first-letter': MusicFirstLetterSelector,
-  'mp3-jenre': Mp3JenreSelector
-};
 
 const argvParser = new ArgvParser(keysDefinition);
 var argvParsed;
-
 try {
   argvParsed = argvParser.parse();
 } catch (err) {
@@ -102,7 +91,7 @@ if (fs.existsSync(argvParsed.dest)) {
           console.log(`Destination directory ${argvParsed.dest} was removed`);
         }
       } catch (err) {
-        console.error(`Error removing directory ${argvParsed.dest}`);
+        console.error(`Error removing directory ${argvParsed.dest}  ${err.message}`);
       }
     }
   } else {
@@ -119,49 +108,7 @@ if (fs.existsSync(argvParsed.source)) {
   }
 }
 
-const filesWalker = new FilesWalker();
-const destSelector = new DestSelector(new selectorsDefinition[argvParsed.selector]());
-const fileCopy = new FileCopy(argvParsed.dest, argvParsed.silent === 'y');
+const filesWalker = new FilesWalker(argvParsed);
+filesWalker.walk();
 
-let copyWatcher = new CopyWatcher(() => {
-  console.log('COMPLETED');
-  if (argvParsed['remove-src'] === 'y') {
-    try {
-      removeDirSync(argvParsed.source);
-      if (argvParsed.silent !== 'y') {
-        console.log(`Source directory ${argvParsed.source} was removed`);
-      }
-    } catch (err) {
-      console.error(`Error removing directory ${argvParsed.source}`);
-      process.exit(1);
-    }
-  }
-});
 
-copyWatcher.init();
-
-filesWalker.walk(argvParsed.source, (err, path) => {
-  if (err) {
-    console.log(err);
-  } else {
-    destSelector.check(path, (err, selector) => {
-      if (err) {
-        console.log(path, err);
-      } else {
-        copyWatcher.start(path);
-        fileCopy.copy(selector, path, (err, message) => {
-          if (err) {
-            console.error(err);
-          } else {
-            if (!this.silent) {
-              console.log(message);
-            }
-          }
-          copyWatcher.end(path);
-        });
-      }
-    });
-  }
-});
-
-copyWatcher.startedAll();

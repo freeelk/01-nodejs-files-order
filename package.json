@@ -21,8 +21,8 @@
   "dependencies": {
     "exif": "^0.6.0",
     "mmmagic": "^0.4.6",
-    "node-id3": "^0.1.0"
+    "node-id3": "^0.1.0",
+    "promisepipe": "^2.1.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
